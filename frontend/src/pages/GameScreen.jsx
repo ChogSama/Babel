@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { TimerCircle, PowerUpButton, AnswerButton, Toast } from '../components/UI';
 import { powerUpInfo } from '../data/mockData';
 
-export function GameScreen({ question, language, onAnswer, onNavigate }) {
+export function GameScreen({ question, language, onAnswer, onNavigate, onExit }) {
   const [timeLeft, setTimeLeft] = useState(question.timeLimit);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
@@ -143,10 +143,32 @@ export function GameScreen({ question, language, onAnswer, onNavigate }) {
       <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: '860px' }}>
         {/* Header: Progress + Timer + Score */}
         <div className="flex items-center justify-between" style={{ marginBottom: '24px', animation: 'fadeIn 0.4s ease' }}>
-          {/* Left: Question progress */}
+          {/* Left: Question progress + Exit */}
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              {language?.flag} {language?.name} · Question {questionNumber}/{totalQuestions}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+              <button
+                id="btn-exit-game"
+                onClick={onExit}
+                title="Exit to mode selection"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: 'var(--clr-text-muted)',
+                  fontSize: '0.72rem',
+                  padding: '3px 10px',
+                  cursor: 'pointer',
+                  letterSpacing: '0.04em',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--clr-danger)'; e.currentTarget.style.color = 'var(--clr-danger)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--clr-text-muted)'; }}
+              >
+                ✕ Exit
+              </button>
+              <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                {language?.flag} {language?.name} · Question {questionNumber}/{totalQuestions}
+              </div>
             </div>
             <div style={{ display: 'flex', gap: '6px' }}>
               {Array.from({ length: totalQuestions }).map((_, i) => (
