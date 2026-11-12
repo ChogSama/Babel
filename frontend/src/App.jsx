@@ -47,6 +47,12 @@ export default function App() {
     setScreen('game');
   };
 
+  const handleExitGame = () => {
+    setSessionResults([]);
+    setSelectedLanguage(null);
+    setScreen('game-mode');
+  };
+
   const handleAnswer = ({ answer, score, hintsUsed }) => {
     const result = {
       answer,
@@ -118,7 +124,7 @@ export default function App() {
         <LanguageSelectScreen
           languages={languages}
           onSelect={handleLanguageSelect}
-          onBack={() => navigate('home')}
+          onBack={() => navigate('game-mode')}
         />
       )}
 
@@ -128,6 +134,7 @@ export default function App() {
           language={currentLang}
           onAnswer={handleAnswer}
           onNavigate={navigate}
+          onExit={handleExitGame}
         />
       )}
 

@@ -120,6 +120,31 @@ export function NotebookScreen({ vocabulary, languages, onNavigate }) {
               ))}
             </div>
 
+            {/* POS Filter */}
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginLeft: '4px' }}>
+              {posTypes.map(pos => (
+                <button
+                  key={pos}
+                  id={`filter-pos-${pos}`}
+                  onClick={() => setFilterPOS(pos)}
+                  style={{
+                    padding: '4px 10px',
+                    border: `1px solid ${filterPOS === pos ? 'var(--clr-accent)' : 'var(--clr-border)'}`,
+                    borderRadius: 'var(--radius-full)',
+                    background: filterPOS === pos ? 'rgba(0,229,255,0.1)' : 'transparent',
+                    color: filterPOS === pos ? 'var(--clr-accent)' : 'var(--clr-text-muted)',
+                    fontSize: '0.72rem',
+                    fontWeight: filterPOS === pos ? 700 : 400,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    textTransform: pos === 'all' ? 'capitalize' : 'none',
+                  }}
+                >
+                  {pos === 'all' ? '✦ All POS' : pos}
+                </button>
+              ))}
+            </div>
+
             {/* Sort */}
             <select
               id="notebook-sort"
@@ -141,6 +166,19 @@ export function NotebookScreen({ vocabulary, languages, onNavigate }) {
               <option value="alpha">Alphabetical</option>
             </select>
           </div>
+
+          {/* Active filter summary */}
+          {(filterLang !== 'all' || filterPOS !== 'all' || search) && (
+            <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>
+              <span>Showing {filtered.length} of {vocabulary.length} words</span>
+              <button
+                onClick={() => { setFilterLang('all'); setFilterPOS('all'); setSearch(''); }}
+                style={{ background: 'none', border: 'none', color: 'var(--clr-danger)', cursor: 'pointer', fontSize: '0.75rem', padding: '0 4px' }}
+              >
+                ✕ Clear filters
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Word List */}
