@@ -8,6 +8,7 @@ import { GameScreen } from './pages/GameScreen';
 import { ResultScreen } from './pages/ResultScreen';
 import { NotebookScreen } from './pages/NotebookScreen';
 import { DashboardScreen } from './pages/DashboardScreen';
+import { GameModeScreen } from './pages/GameModeScreen';
 import {
   languages,
   questions,
@@ -103,6 +104,13 @@ export default function App() {
           player={player}
           dailyChallenge={dailyChallenge}
           onNavigate={navigate}
+        />
+      )}
+
+      {screen === 'game-mode' && (
+        <GameModeScreen
+          onNavigate={navigate}
+          dailyChallenge={dailyChallenge}
         />
       )}
 
