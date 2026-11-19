@@ -305,6 +305,37 @@ export const questions = [
     },
     baseScore: 1000,
   },
+  {
+    id: 'q8',
+    languageId: 'fi',
+    category: 'Linguistics',
+    categoryIcon: '🗣️',
+    difficulty: 'MEDIUM',
+    translatedContent: 'Kuinka monta kieltä on maailmassa?',
+    originalContent: 'How many languages are there in the world?',
+    timeLimit: 75,
+    answers: [
+      { id: 'a1', content: 'Around 7,000', isCorrect: true },
+      { id: 'a2', content: 'Around 1,000', isCorrect: false },
+      { id: 'a3', content: 'Around 3,500', isCorrect: false },
+      { id: 'a4', content: 'Around 15,000', isCorrect: false },
+    ],
+    explanation: 'Linguists estimate there are approximately 7,000 languages spoken in the world today, though many are endangered.',
+    hints: {
+      lexicon: [
+        { word: 'Kuinka', meaning: 'How', pos: 'Adverb' },
+        { word: 'monta', meaning: 'many', pos: 'Numeral' },
+        { word: 'kieltä', meaning: 'languages (partitive)', pos: 'Noun' },
+        { word: 'maailmassa', meaning: 'in the world (inessive)', pos: 'Noun' },
+      ],
+      grammar: '"Kieltä" is the partitive form of "kieli" (language). Finnish uses the partitive case after numbers and "how many" questions.',
+      contextualClue: 'This question is about linguistics itself — the study of languages. Think about how many diverse language families exist globally.',
+      partialTranslation: 'How many _____ are there in the _____?',
+      fullTranslation: 'How many languages are there in the world?',
+      patternWords: ['kieltä', 'maailmassa'],
+    },
+    baseScore: 900,
+  },
 ];
 
 export const dailyChallenge = {

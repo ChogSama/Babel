@@ -26,8 +26,7 @@ const MODES = [
     glow: 'var(--clr-accent-glow)',
     badge: 'Unlocked',
     badgeColor: 'var(--clr-accent)',
-    navigateTo: 'game',
-  },
+    navigateTo: 'random-start',  },
   {
     id: 'daily',
     icon: '📅',
@@ -39,17 +38,23 @@ const MODES = [
     glow: 'var(--clr-gold-glow)',
     badge: 'New Today',
     badgeColor: 'var(--clr-gold)',
-    navigateTo: 'game',
+    navigateTo: 'daily',
   },
 ];
 
-export function GameModeScreen({ onNavigate, dailyChallenge }) {
+export function GameModeScreen({ onNavigate, onRandomStart, dailyChallenge }) {
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState(null);
 
   const handleSelect = (mode) => {
     setSelected(mode.id);
-    setTimeout(() => onNavigate(mode.navigateTo), 180);
+    setTimeout(() => {
+      if (mode.id === 'random' && onRandomStart) {
+        onRandomStart();
+      } else {
+        onNavigate(mode.navigateTo);
+      }
+    }, 180);
   };
 
   return (
