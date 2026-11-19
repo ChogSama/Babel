@@ -9,6 +9,7 @@ import { ResultScreen } from './pages/ResultScreen';
 import { NotebookScreen } from './pages/NotebookScreen';
 import { DashboardScreen } from './pages/DashboardScreen';
 import { GameModeScreen } from './pages/GameModeScreen';
+import { DailyChallengeScreen } from './pages/DailyChallengeScreen';
 import {
   languages,
   questions,
@@ -18,11 +19,12 @@ import {
 } from './data/mockData';
 
 export default function App() {
-  const [screen, setScreen] = useState('auth'); // auth | home | game-mode | language-select | game | result | notebook | dashboard
+  const [screen, setScreen] = useState('auth'); // auth | home | game-mode | daily | language-select | game | result | notebook | dashboard
   const [player, setPlayer] = useState(defaultPlayer);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [sessionQuestions, setSessionQuestions] = useState([]);
+  const [sessionIndex, setSessionIndex] = useState(0);
   const [sessionResults, setSessionResults] = useState([]);
   const [lastResult, setLastResult] = useState(null);
 
@@ -38,11 +40,36 @@ export default function App() {
     setScreen('home');
   };
 
+  // Start an Expedition session for a chosen language (up to 5 Qs)
   const handleLanguageSelect = (lang) => {
     setSelectedLanguage(lang);
-    // Pick a question for this language
-    const q = questions.find(q => q.languageId === lang.id) || questions[0];
-    setCurrentQuestionIndex(questions.indexOf(q));
+    const qs = questions.filter(q => q.languageId === lang.id);
+    const session = qs.length > 0 ? qs.slice(0, 5) : [questions[0]];
+    setSessionQuestions(session);
+    setSessionIndex(0);
+    setSessionResults([]);
+    setScreen('game');
+  };
+
+  // Start a Random session (pick 5 random questions from all)
+  const handleRandomStart = () => {
+    const shuffled = [...questions].sort(() => Math.random() - 0.5);
+    const session = shuffled.slice(0, 5);
+    const firstLang = languages.find(l => l.id === session[0].languageId) || languages[0];
+    setSelectedLanguage(firstLang);
+    setSessionQuestions(session);
+    setSessionIndex(0);
+    setSessionResults([]);
+    setScreen('game');
+  };
+
+  // Start a Daily session (single question)
+  const handleDailyStart = () => {
+    const q = dailyChallenge.question;
+    const lang = languages.find(l => l.id === q.languageId) || languages[0];
+    setSelectedLanguage(lang);
+    setSessionQuestions([q]);
+    setSessionIndex(0);
     setSessionResults([]);
     setScreen('game');
   };
@@ -50,6 +77,8 @@ export default function App() {
   const handleExitGame = () => {
     setSessionResults([]);
     setSelectedLanguage(null);
+    setSessionQuestions([]);
+    setSessionIndex(0);
     setScreen('game-mode');
   };
 
@@ -63,33 +92,49 @@ export default function App() {
     const newResults = [...sessionResults, result];
     setSessionResults(newResults);
 
-    // After a short delay, show result screen
-    setTimeout(() => {
-      const totalScore = newResults.reduce((s, r) => s + r.score, 0);
-      const correct = newResults.filter(r => r.correct).length;
-      setLastResult({
-        score: totalScore,
-        correct,
-        total: newResults.length,
-        hintsUsed: newResults.reduce((s, r) => s + r.hintsUsed, 0),
-        timeBonus: Math.round(Math.random() * 200),
-      });
-      setScreen('result');
-    }, 300);
+    const nextIndex = sessionIndex + 1;
+
+    // If more questions remain in the session, advance
+    if (nextIndex < sessionQuestions.length) {
+      setTimeout(() => {
+        setSessionIndex(nextIndex);
+        // Update language for new question (relevant in Random mode)
+        const nextQ = sessionQuestions[nextIndex];
+        const nextLang = languages.find(l => l.id === nextQ.languageId) || selectedLanguage;
+        setSelectedLanguage(nextLang);
+        // Force GameScreen re-mount by briefly going to a transition state then back
+        setScreen('transitioning');
+        setTimeout(() => setScreen('game'), 50);
+      }, 2600);
+    } else {
+      // Session over — show result
+      setTimeout(() => {
+        const totalScore = newResults.reduce((s, r) => s + r.score, 0);
+        const correct = newResults.filter(r => r.correct).length;
+        setLastResult({
+          score: totalScore,
+          correct,
+          total: newResults.length,
+          hintsUsed: newResults.reduce((s, r) => s + r.hintsUsed, 0),
+          timeBonus: Math.round(Math.random() * 200),
+        });
+        setScreen('result');
+      }, 2600);
+    }
   };
 
   const handlePlayAgain = () => {
-    // Pick a random question
-    const idx = Math.floor(Math.random() * questions.length);
-    setCurrentQuestionIndex(idx);
+    // Go back to mode selection
     setSessionResults([]);
-    setScreen('game');
+    setSessionQuestions([]);
+    setSessionIndex(0);
+    setScreen('game-mode');
   };
 
-  const currentQuestion = questions[currentQuestionIndex] || questions[0];
+  const currentQuestion = sessionQuestions[sessionIndex] || questions[0];
   const currentLang = selectedLanguage || languages.find(l => l.id === currentQuestion.languageId) || languages[0];
 
-  const showNavbar = isAuthenticated && !['auth', 'game', 'result'].includes(screen);
+  const showNavbar = isAuthenticated && !['auth', 'game', 'result', 'transitioning'].includes(screen);
 
   return (
     <>
@@ -116,7 +161,17 @@ export default function App() {
       {screen === 'game-mode' && (
         <GameModeScreen
           onNavigate={navigate}
+          onRandomStart={handleRandomStart}
           dailyChallenge={dailyChallenge}
+        />
+      )}
+
+      {screen === 'daily' && (
+        <DailyChallengeScreen
+          dailyChallenge={dailyChallenge}
+          player={player}
+          onStart={handleDailyStart}
+          onNavigate={navigate}
         />
       )}
 
@@ -132,6 +187,8 @@ export default function App() {
         <GameScreen
           question={currentQuestion}
           language={currentLang}
+          questionNumber={sessionIndex + 1}
+          totalQuestions={sessionQuestions.length || 1}
           onAnswer={handleAnswer}
           onNavigate={navigate}
           onExit={handleExitGame}
