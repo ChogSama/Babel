@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 // ── Star Background ──────────────────────────────────────────────
 export function StarBackground() {

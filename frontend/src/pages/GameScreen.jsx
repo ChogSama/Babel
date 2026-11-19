@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { TimerCircle, PowerUpButton, AnswerButton, Toast } from '../components/UI';
 import { powerUpInfo } from '../data/mockData';
 
-export function GameScreen({ question, language, questionNumber = 1, totalQuestions = 5, onAnswer, onNavigate, onExit }) {
+export function GameScreen({ question, language, questionNumber = 1, totalQuestions = 5, onAnswer, onExit }) {
   const [timeLeft, setTimeLeft] = useState(question.timeLimit);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answered, setAnswered] = useState(false);
