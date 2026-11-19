@@ -76,7 +76,7 @@ export function NotebookScreen({ vocabulary, languages, onNavigate }) {
               <button
                 id="btn-start-review"
                 className="btn btn-primary"
-                onClick={() => onNavigate('game')}
+                onClick={() => onNavigate('review')}
               >
                 Start Review
               </button>

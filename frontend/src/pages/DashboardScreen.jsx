@@ -1,7 +1,22 @@
+import { useState } from 'react';
 import { StarBackground, ProgressCircle, LanguageCard } from '../components/UI';
 import { achievements, gameHistory } from '../data/mockData';
 
-export function DashboardScreen({ player, languages, onNavigate }) {
+const AVATAR_OPTIONS = ['🗺️', '🧙‍♂️', '🦉', '🦊', '🧭', '📜', '👑', '🚀', '🌟', '💎'];
+
+export function DashboardScreen({ player, languages, onNavigate, onUpdatePlayer }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [username, setUsername] = useState(player.username);
+  const [avatar, setAvatar] = useState(player.avatar);
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
+    if (onUpdatePlayer) {
+      onUpdatePlayer({ username: username.trim() || player.username, avatar });
+    }
+    setIsEditing(false);
+  };
+
   const rarityColors = {
     Common: 'var(--clr-text-muted)',
     Uncommon: 'var(--clr-success)',
@@ -39,10 +54,24 @@ export function DashboardScreen({ player, languages, onNavigate }) {
               {player.avatar}
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
-                <h2 style={{ fontSize: '1.5rem' }}>{player.username}</h2>
-                <div className="badge badge-gold">{player.rank}</div>
-                <div className="badge badge-primary">Lv.{player.level}</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <h2 style={{ fontSize: '1.5rem' }}>{player.username}</h2>
+                  <div className="badge badge-gold">{player.rank}</div>
+                  <div className="badge badge-primary">Lv.{player.level}</div>
+                </div>
+                <button
+                  id="btn-edit-profile"
+                  className="btn btn-outline btn-sm"
+                  onClick={() => {
+                    setUsername(player.username);
+                    setAvatar(player.avatar);
+                    setIsEditing(true);
+                  }}
+                  style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                >
+                  ✏️ Edit Profile
+                </button>
               </div>
               <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--clr-text-muted)' }}>🔥 {player.streak}-day streak</span>
@@ -179,6 +208,80 @@ export function DashboardScreen({ player, languages, onNavigate }) {
             ))}
           </div>
         </div>
+
+        {/* Profile Edit Modal */}
+        {isEditing && (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 100,
+            background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(6px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+          }}>
+            <div className="card-glass" style={{ width: '100%', maxWidth: '440px', padding: '32px', animation: 'fadeInScale 0.3s ease' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '1.2rem', margin: 0 }}>Edit Profile</h3>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  style={{ background: 'none', border: 'none', color: 'var(--clr-text-muted)', fontSize: '1.2rem', cursor: 'pointer' }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <label className="label" style={{ marginBottom: '8px', display: 'block' }}>Choose Avatar</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
+                    {AVATAR_OPTIONS.map((opt) => (
+                      <button
+                        type="button"
+                        key={opt}
+                        onClick={() => setAvatar(opt)}
+                        style={{
+                          fontSize: '1.8rem',
+                          padding: '8px',
+                          borderRadius: 'var(--radius-sm)',
+                          border: avatar === opt ? '2px solid var(--clr-primary)' : '1px solid var(--clr-border)',
+                          background: avatar === opt ? 'rgba(124,58,255,0.2)' : 'rgba(255,255,255,0.03)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="label" style={{ marginBottom: '8px', display: 'block' }}>Explorer Name</label>
+                  <input
+                    id="input-edit-username"
+                    className="input"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your name"
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                  <button type="submit" id="btn-save-profile" className="btn btn-primary" style={{ flex: 1 }}>
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={() => setIsEditing(false)}
+                    style={{ flex: 1 }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

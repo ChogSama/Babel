@@ -10,17 +10,19 @@ import { NotebookScreen } from './pages/NotebookScreen';
 import { DashboardScreen } from './pages/DashboardScreen';
 import { GameModeScreen } from './pages/GameModeScreen';
 import { DailyChallengeScreen } from './pages/DailyChallengeScreen';
+import { SpacedRepetitionScreen } from './pages/SpacedRepetitionScreen';
 import {
   languages,
   questions,
   player as defaultPlayer,
-  vocabularyNotebook,
+  vocabularyNotebook as defaultVocab,
   dailyChallenge,
 } from './data/mockData';
 
 export default function App() {
-  const [screen, setScreen] = useState('auth'); // auth | home | game-mode | daily | language-select | game | result | notebook | dashboard
+  const [screen, setScreen] = useState('auth'); // auth | home | game-mode | daily | language-select | game | result | notebook | dashboard | review
   const [player, setPlayer] = useState(defaultPlayer);
+  const [vocab, setVocab] = useState(defaultVocab);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(null);
   const [sessionQuestions, setSessionQuestions] = useState([]);
@@ -107,20 +109,76 @@ export default function App() {
         setTimeout(() => setScreen('game'), 50);
       }, 2600);
     } else {
-      // Session over — show result
+      // Session over — calculate score, XP, and update player profile
       setTimeout(() => {
         const totalScore = newResults.reduce((s, r) => s + r.score, 0);
         const correct = newResults.filter(r => r.correct).length;
+        const hintsUsed = newResults.reduce((s, r) => s + r.hintsUsed, 0);
+        const timeBonus = Math.round(Math.random() * 200);
+        const accuracy = Math.round((correct / newResults.length) * 100);
+        const finalScore = Math.max(totalScore + Math.round(accuracy * 8) + timeBonus - hintsUsed * 50, 0);
+        const xpGained = Math.round(finalScore / 10);
+
+        setPlayer(prev => {
+          const newExp = prev.experience + xpGained;
+          let newLevel = prev.level;
+          let newExpToNext = prev.experienceToNext;
+          if (newExp >= newExpToNext) {
+            newLevel += 1;
+            newExpToNext += 2000;
+          }
+          const totalQuestions = prev.questionsCompleted + newResults.length;
+          const totalCorrect = prev.correctAnswers + correct;
+          return {
+            ...prev,
+            totalScore: prev.totalScore + finalScore,
+            experience: newExp,
+            level: newLevel,
+            experienceToNext: newExpToNext,
+            questionsCompleted: totalQuestions,
+            correctAnswers: totalCorrect,
+            accuracyRate: Math.round((totalCorrect / totalQuestions) * 100),
+          };
+        });
+
         setLastResult({
           score: totalScore,
           correct,
           total: newResults.length,
-          hintsUsed: newResults.reduce((s, r) => s + r.hintsUsed, 0),
-          timeBonus: Math.round(Math.random() * 200),
+          hintsUsed,
+          timeBonus,
         });
         setScreen('result');
       }, 2600);
     }
+  };
+
+  const handleReviewComplete = ({ xpEarned, updatedVocab }) => {
+    if (updatedVocab) {
+      setVocab(updatedVocab);
+    }
+    if (xpEarned > 0) {
+      setPlayer(prev => {
+        const newExp = prev.experience + xpEarned;
+        let newLevel = prev.level;
+        let newExpToNext = prev.experienceToNext;
+        if (newExp >= newExpToNext) {
+          newLevel += 1;
+          newExpToNext += 2000;
+        }
+        return {
+          ...prev,
+          experience: newExp,
+          level: newLevel,
+          experienceToNext: newExpToNext,
+        };
+      });
+    }
+    setScreen('notebook');
+  };
+
+  const handleUpdatePlayer = (updatedFields) => {
+    setPlayer(prev => ({ ...prev, ...updatedFields }));
   };
 
   const handlePlayAgain = () => {
@@ -134,7 +192,7 @@ export default function App() {
   const currentQuestion = sessionQuestions[sessionIndex] || questions[0];
   const currentLang = selectedLanguage || languages.find(l => l.id === currentQuestion.languageId) || languages[0];
 
-  const showNavbar = isAuthenticated && !['auth', 'game', 'result', 'transitioning'].includes(screen);
+  const showNavbar = isAuthenticated && !['auth', 'game', 'result', 'transitioning', 'review'].includes(screen);
 
   return (
     <>
@@ -206,8 +264,16 @@ export default function App() {
 
       {screen === 'notebook' && (
         <NotebookScreen
-          vocabulary={vocabularyNotebook}
+          vocabulary={vocab}
           languages={languages}
+          onNavigate={navigate}
+        />
+      )}
+
+      {screen === 'review' && (
+        <SpacedRepetitionScreen
+          vocabulary={vocab}
+          onComplete={handleReviewComplete}
           onNavigate={navigate}
         />
       )}
@@ -217,6 +283,7 @@ export default function App() {
           player={player}
           languages={languages}
           onNavigate={navigate}
+          onUpdatePlayer={handleUpdatePlayer}
         />
       )}
     </>
