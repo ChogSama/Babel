@@ -57,6 +57,7 @@ export function Navbar({ currentScreen, onNavigate, player }) {
     { id: 'game-mode', icon: '⚔️', label: 'Play' },
     { id: 'notebook', icon: '📓', label: 'Notebook' },
     { id: 'dashboard', icon: '📊', label: 'Progress' },
+    { id: 'leaderboard', icon: '🏆', label: 'Ranks' },
   ];
 
   return (

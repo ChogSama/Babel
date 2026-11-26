@@ -1,0 +1,23 @@
+// Sprint 5 — Global Leaderboard mock data
+export const leaderboard = [
+  { username: 'PolyglotKing',  avatar: '👑', tier: 'Grandmaster', level: 42, score: 98340, accuracy: 94, streak: 87, topLanguage: 'Finnish'  },
+  { username: 'LinguaLucia',   avatar: '🦉', tier: 'Master',      level: 38, score: 87210, accuracy: 91, streak: 54, topLanguage: 'Spanish'  },
+  { username: 'BabelBreaker',  avatar: '🗺️', tier: 'Master',      level: 35, score: 81450, accuracy: 88, streak: 42, topLanguage: 'French'   },
+  { username: 'CodexFox',      avatar: '🦊', tier: 'Expert',      level: 29, score: 72300, accuracy: 85, streak: 33, topLanguage: 'German'   },
+  { username: 'RuneReader',    avatar: '📜', tier: 'Expert',      level: 27, score: 65800, accuracy: 82, streak: 28, topLanguage: 'Finnish'  },
+  { username: 'SyntaxSage',    avatar: '🧙‍♂️', tier: 'Expert',      level: 25, score: 58990, accuracy: 80, streak: 21, topLanguage: 'Spanish'  },
+  { username: 'GrammarGuru',   avatar: '🔑', tier: 'Advanced',    level: 22, score: 51200, accuracy: 77, streak: 18, topLanguage: 'French'   },
+  { username: 'VocabViper',    avatar: '💎', tier: 'Advanced',    level: 20, score: 46700, accuracy: 74, streak: 15, topLanguage: 'German'   },
+  { username: 'ClueHunter',    avatar: '🧭', tier: 'Advanced',    level: 18, score: 41500, accuracy: 72, streak: 12, topLanguage: 'Spanish'  },
+  { username: 'PatternProwl',  avatar: '🔍', tier: 'Advanced',    level: 16, score: 37200, accuracy: 70, streak: 10, topLanguage: 'Finnish'  },
+  { username: 'DecipherDame',  avatar: '🌟', tier: 'Intermediate',level: 14, score: 31800, accuracy: 67, streak:  8, topLanguage: 'French'   },
+  { username: 'LexiconLord',   avatar: '🚀', tier: 'Intermediate',level: 12, score: 27600, accuracy: 65, streak:  7, topLanguage: 'German'   },
+  { username: 'EnigmaElf',     avatar: '🌙', tier: 'Intermediate',level: 11, score: 23400, accuracy: 62, streak:  5, topLanguage: 'Spanish'  },
+  { username: 'SyllableSeek',  avatar: '🎯', tier: 'Intermediate',level: 10, score: 19900, accuracy: 60, streak:  4, topLanguage: 'Finnish'  },
+  { username: 'GlyphGazer',    avatar: '📡', tier: 'Intermediate',level:  9, score: 16500, accuracy: 58, streak:  3, topLanguage: 'French'   },
+  { username: 'PhrasePhoenix', avatar: '🌈', tier: 'Beginner',    level:  7, score: 12800, accuracy: 55, streak:  3, topLanguage: 'German'   },
+  { username: 'SyntaxSparrow', avatar: '🦋', tier: 'Beginner',    level:  6, score:  9900, accuracy: 52, streak:  2, topLanguage: 'Spanish'  },
+  { username: 'TokenTracer',   avatar: '🔮', tier: 'Beginner',    level:  5, score:  7400, accuracy: 50, streak:  2, topLanguage: 'Finnish'  },
+  { username: 'GlossGoblin',   avatar: '🌿', tier: 'Beginner',    level:  4, score:  5100, accuracy: 47, streak:  1, topLanguage: 'French'   },
+  { username: 'NoviceCipher',  avatar: '⚡', tier: 'Beginner',    level:  3, score:  3200, accuracy: 44, streak:  1, topLanguage: 'German'   },
+];
