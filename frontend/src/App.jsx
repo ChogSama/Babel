@@ -11,6 +11,7 @@ import { DashboardScreen } from './pages/DashboardScreen';
 import { GameModeScreen } from './pages/GameModeScreen';
 import { DailyChallengeScreen } from './pages/DailyChallengeScreen';
 import { SpacedRepetitionScreen } from './pages/SpacedRepetitionScreen';
+import { LeaderboardScreen } from './pages/LeaderboardScreen';
 import {
   languages,
   questions,
@@ -20,7 +21,7 @@ import {
 } from './data/mockData';
 
 export default function App() {
-  const [screen, setScreen] = useState('auth'); // auth | home | game-mode | daily | language-select | game | result | notebook | dashboard | review
+  const [screen, setScreen] = useState('auth'); // auth | home | game-mode | daily | language-select | game | result | notebook | dashboard | review | leaderboard
   const [player, setPlayer] = useState(defaultPlayer);
   const [vocab, setVocab] = useState(defaultVocab);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -284,6 +285,13 @@ export default function App() {
           languages={languages}
           onNavigate={navigate}
           onUpdatePlayer={handleUpdatePlayer}
+        />
+      )}
+
+      {screen === 'leaderboard' && (
+        <LeaderboardScreen
+          player={player}
+          onNavigate={navigate}
         />
       )}
     </>

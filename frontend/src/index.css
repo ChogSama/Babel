@@ -281,6 +281,13 @@ a:hover { color: var(--clr-accent); }
 }
 
 .btn-ghost:hover { color: var(--clr-text-primary); }
+.btn-accent {
+  background: linear-gradient(135deg, var(--clr-accent), #0ea5e9);
+  color: #000;
+  border: none;
+  font-weight: 700;
+}
+.btn-accent:hover { opacity: 0.85; }
 
 .btn-sm {
   padding: var(--space-2) var(--space-4);
