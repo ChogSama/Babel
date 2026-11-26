@@ -409,3 +409,71 @@ export function VocabRow({ word }) {
     </div>
   );
 }
+
+// ── Achievement Toast (Sprint 6) ──────────────────────────────────────────
+export function AchievementToast({ achievement, onDismiss }) {
+  useEffect(() => {
+    const timer = setTimeout(onDismiss, 5000);
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  const rarityColors = {
+    Common:    'var(--clr-text-muted)',
+    Uncommon:  'var(--clr-success)',
+    Rare:      'var(--clr-accent)',
+    Epic:      'var(--clr-primary-light)',
+    Legendary: 'var(--clr-gold)',
+  };
+  const color = rarityColors[achievement.rarity] || 'var(--clr-gold)';
+
+  return (
+    <div
+      className="achievement-toast"
+      style={{ '--ach-color': color }}
+      onClick={onDismiss}
+      title="Click to dismiss"
+    >
+      <div className="achievement-toast-shine" />
+      <div className="achievement-toast-icon">{achievement.icon}</div>
+      <div className="achievement-toast-body">
+        <div className="achievement-toast-label">🏅 Achievement Unlocked!</div>
+        <div className="achievement-toast-name" style={{ color }}>{achievement.name}</div>
+        <div className="achievement-toast-desc">{achievement.description}</div>
+        <div className="achievement-toast-xp" style={{ color }}>+{achievement.xpReward} XP bonus</div>
+      </div>
+    </div>
+  );
+}
+
+// ── Achievement Toast Overlay ─────────────────────────────────────────────
+export function AchievementToastOverlay({ queue, onDismiss }) {
+  if (!queue || queue.length === 0) return null;
+  return (
+    <div style={{
+      position: 'fixed',
+      bottom: '28px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 9999,
+      display: 'flex',
+      flexDirection: 'column-reverse',
+      gap: '10px',
+      alignItems: 'center',
+      pointerEvents: 'none',
+    }}>
+      {queue.map((ach, i) => (
+        <div
+          key={ach.id}
+          style={{
+            pointerEvents: 'auto',
+            opacity: i === 0 ? 1 : Math.max(0.5, 1 - i * 0.25),
+            transform: `scale(${1 - i * 0.05}) translateY(${i * -4}px)`,
+            transition: 'all 0.3s ease',
+          }}
+        >
+          <AchievementToast achievement={ach} onDismiss={() => onDismiss(ach.id)} />
+        </div>
+      ))}
+    </div>
+  );
+}

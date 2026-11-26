@@ -1,6 +1,7 @@
 import { StarBackground } from '../components/UI';
+import { RARITY_COLORS } from '../data/achievementsData';
 
-export function ResultScreen({ result, language, onPlayAgain, onNavigate }) {
+export function ResultScreen({ result, language, newAchievements = [], onPlayAgain, onNavigate }) {
   const { score, correct, total, hintsUsed, timeBonus = 0 } = result;
   const accuracy = Math.round((correct / total) * 100);
   const grade = accuracy >= 80 ? 'S' : accuracy >= 60 ? 'A' : accuracy >= 40 ? 'B' : 'C';
@@ -92,6 +93,66 @@ export function ResultScreen({ result, language, onPlayAgain, onNavigate }) {
             <div className="progress-fill progress-fill-gold" style={{ width: '70%' }} />
           </div>
         </div>
+
+        {/* Achievements Unlocked */}
+        {newAchievements.length > 0 && (
+          <div className="card" style={{
+            marginBottom: '24px',
+            background: 'linear-gradient(135deg, rgba(255,215,0,0.06), rgba(124,58,255,0.06))',
+            borderColor: 'rgba(255,215,0,0.25)',
+            animation: 'fadeInScale 0.6s ease 0.4s both',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '1.4rem' }}>🏅</span>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--clr-gold)' }}>
+                  Achievement{newAchievements.length > 1 ? 's' : ''} Unlocked!
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>
+                  {newAchievements.length} new badge{newAchievements.length > 1 ? 's' : ''} earned this session
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {newAchievements.map(ach => (
+                <div key={ach.id} style={{
+                  display: 'flex', alignItems: 'center', gap: '14px',
+                  padding: '10px 14px',
+                  background: 'rgba(255,255,255,0.03)',
+                  borderRadius: 'var(--radius-sm)',
+                  border: `1px solid ${RARITY_COLORS[ach.rarity]}44`,
+                }}>
+                  <span style={{
+                    fontSize: '1.8rem',
+                    filter: `drop-shadow(0 0 8px ${RARITY_COLORS[ach.rarity]})`,
+                  }}>{ach.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, color: RARITY_COLORS[ach.rarity], fontSize: '0.95rem' }}>
+                      {ach.name}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>
+                      {ach.description}
+                    </div>
+                  </div>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)', fontWeight: 700,
+                    fontSize: '0.8rem', color: RARITY_COLORS[ach.rarity],
+                    whiteSpace: 'nowrap',
+                  }}>
+                    +{ach.xpReward} XP
+                  </div>
+                  <div style={{
+                    fontSize: '0.6rem', textTransform: 'uppercase',
+                    letterSpacing: '0.08em', color: RARITY_COLORS[ach.rarity],
+                    fontWeight: 700,
+                  }}>
+                    {ach.rarity}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: '12px' }}>
