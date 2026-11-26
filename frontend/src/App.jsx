@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './index.css';
-import { Navbar } from './components/UI';
+import { Navbar, AchievementToastOverlay } from './components/UI';
+import { evaluateAchievements } from './data/achievementsData';
 import { AuthScreen } from './pages/AuthScreen';
 import { HomeScreen } from './pages/HomeScreen';
 import { LanguageSelectScreen } from './pages/LanguageSelectScreen';
@@ -30,6 +31,8 @@ export default function App() {
   const [sessionIndex, setSessionIndex] = useState(0);
   const [sessionResults, setSessionResults] = useState([]);
   const [lastResult, setLastResult] = useState(null);
+  const [newAchievements, setNewAchievements] = useState([]);      // sprint-6: newly unlocked this session
+  const [achievementQueue, setAchievementQueue] = useState([]);    // sprint-6: live toast queue
 
   const navigate = (to) => {
     if (to === 'home' && !isAuthenticated) { setScreen('auth'); return; }
@@ -130,7 +133,7 @@ export default function App() {
           }
           const totalQuestions = prev.questionsCompleted + newResults.length;
           const totalCorrect = prev.correctAnswers + correct;
-          return {
+          const updatedPlayer = {
             ...prev,
             totalScore: prev.totalScore + finalScore,
             experience: newExp,
@@ -140,6 +143,19 @@ export default function App() {
             correctAnswers: totalCorrect,
             accuracyRate: Math.round((totalCorrect / totalQuestions) * 100),
           };
+
+          // Sprint 6: evaluate achievements with the updated player state
+          const unlocked = evaluateAchievements(updatedPlayer, prev.achievements || [], newResults);
+          if (unlocked.length > 0) {
+            const unlockedIds = unlocked.map(a => a.id);
+            updatedPlayer.achievements = [...(prev.achievements || []), ...unlockedIds];
+            setNewAchievements(unlocked);
+            setAchievementQueue(unlocked);
+          } else {
+            setNewAchievements([]);
+          }
+
+          return updatedPlayer;
         });
 
         setLastResult({
@@ -197,6 +213,12 @@ export default function App() {
 
   return (
     <>
+      {/* Sprint 6: Global achievement toast overlay — visible on any authenticated screen */}
+      <AchievementToastOverlay
+        queue={achievementQueue}
+        onDismiss={(id) => setAchievementQueue(q => q.filter(a => a.id !== id))}
+      />
+
       {showNavbar && (
         <Navbar
           currentScreen={screen}
@@ -258,6 +280,7 @@ export default function App() {
         <ResultScreen
           result={lastResult}
           language={currentLang}
+          newAchievements={newAchievements}
           onPlayAgain={handlePlayAgain}
           onNavigate={navigate}
         />
